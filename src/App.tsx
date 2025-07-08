@@ -1,8 +1,4 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Suspense } from "react";
-
-
-
 
 const router = createBrowserRouter([
   {
@@ -10,61 +6,35 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Suspense fallback={<h1>Loading...</h1>}>
-          <h1>Home</h1>
-        </Suspense>
+        element: <h1>Home</h1>
       },
       // Host Views
       {
         path: "/create",
-        element: (
-            <Suspense fallback={<h1>Loading...</h1>}>
-              <h1>CreateQueue</h1>
-            </Suspense>
-        )
+        element: <h1>CreateQueue</h1>
       },
       {
         path: "/my-queues",
-        element: (
-            <Suspense fallback={<h1>Loading...</h1>}>
-              <h1>HostQueues</h1>
-            </Suspense>
-        ),
+        element: <h1>HostQueues</h1>
       },
       {
         path: "/my-queues/:queueId",
-        element: (
-            <Suspense fallback={<h1>Loading...</h1>}>
-              <h1>HostQueueDetails</h1>
-            </Suspense>
-        ),
+        element: <h1>HostQueueDetails</h1>
       },
       {
         path: "/qr/:queueId",
-        element: (
-            <Suspense fallback={<h1>Loading...</h1>}>
-              <h1>QR</h1>
-            </Suspense>
-        ),
+        element: <h1>QR</h1>
       },
       
       
       // Customer Views
       {
         path: "/join/:queueId",
-        element: (
-          <Suspense fallback={<h1>Loading...</h1>}>
-            <h1>JoinQueue</h1>
-          </Suspense>
-        ),
+        element: <h1>JoinQueue</h1>
       },
       {
         path: "/queue/:queueId/customer/:customerId",
-        element: (
-          <Suspense fallback={<h1>Loading...</h1>}>
-            <h1>CustomerView</h1>
-          </Suspense>
-        ),
+        element: <h1>CustomerView</h1>
       },
 
 
@@ -72,15 +42,11 @@ const router = createBrowserRouter([
       // Auth Views
       {
         path: "/login",
-        element: <Suspense fallback={<h1>Loading...</h1>}>
-          <h1>Login</h1>
-        </Suspense>
+        element: <h1>Login</h1>
       },
       {
         path: "/register",
-        element: <Suspense fallback={<h1>Loading...</h1>}>
-          <h1>Signup</h1>
-        </Suspense>
+        element: <h1>Signup</h1>
       },
     ]
   }
