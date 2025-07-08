@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
+import JoinQueue from "./pages/JoinQueue";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
       // Customer Views
       {
         path: "/join/:queueId",
-        element: <h1>JoinQueue</h1>
+        element: <JoinQueue />
       },
       {
         path: "/queue/:queueId/customer/:customerId",
