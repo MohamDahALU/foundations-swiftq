@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import JoinQueue from "./pages/JoinQueue";
 import Login from "./pages/Login";
+import CreateQueue from "./pages/createQueue";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
       // Host Views
       {
         path: "/create",
-        element: <h1>CreateQueue</h1>
+        element: <CreateQueue />
       },
       {
         path: "/my-queues",
