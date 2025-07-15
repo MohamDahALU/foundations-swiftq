@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import JoinQueue from "./pages/JoinQueue";
+import Login from "./pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -44,7 +45,7 @@ const router = createBrowserRouter([
       // Auth Views
       {
         path: "/login",
-        element: <h1>Login</h1>
+        element: <Login />
       },
       {
         path: "/register",
