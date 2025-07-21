@@ -4,6 +4,7 @@ import JoinQueue from "./pages/JoinQueue";
 import Login from "./pages/Login";
 import CreateQueue from "./pages/CreateQueue";
 import HostQueues from "./pages/HostQueues";
+import Signup from "./pages/Signup";
 
 const router = createBrowserRouter([
   {
@@ -11,57 +12,50 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />
+        element: <Home />,
       },
       // Host Views
       {
         path: "/create",
-        element: <CreateQueue />
+        element: <CreateQueue />,
       },
       {
         path: "/my-queues",
-        element: <HostQueues />
+        element: <HostQueues />,
       },
       {
         path: "/my-queues/:queueId",
-        element: <h1>HostQueueDetails</h1>
+        element: <h1>HostQueueDetails</h1>,
       },
       {
         path: "/qr/:queueId",
-        element: <h1>QR</h1>
+        element: <h1>QR</h1>,
       },
-      
-      
+
       // Customer Views
       {
         path: "/join/:queueId",
-        element: <JoinQueue />
+        element: <JoinQueue />,
       },
       {
         path: "/queue/:queueId/customer/:customerId",
-        element: <h1>CustomerView</h1>
+        element: <h1>CustomerView</h1>,
       },
-
-
 
       // Auth Views
       {
         path: "/login",
-        element: <Login />
+        element: <Login />,
       },
       {
         path: "/register",
-        element: <h1>Signup</h1>
+        element: <Signup />,
       },
-    ]
-  }
+    ],
+  },
 ]);
 function App() {
-
-
-  return (
-      <RouterProvider router={router} />
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
