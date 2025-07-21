@@ -5,9 +5,11 @@ import Login from "./pages/Login";
 import CreateQueue from "./pages/CreateQueue";
 import HostQueues from "./pages/HostQueues";
 import Signup from "./pages/Signup";
+import Layout from "./components/Layout";
 
 const router = createBrowserRouter([
   {
+    element: <Layout />,
     errorElement: <h1>Error</h1>,
     children: [
       {

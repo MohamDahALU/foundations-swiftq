@@ -4,15 +4,6 @@ import logoFull from "../assets/logoFull.png";
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="container mx-auto p-4 flex justify-between items-center">
-        <div className="flex items-center">
-          <img src={logoFull} className='max-h-16' />
-        </div>
-        <Link to="/login">
-          <button className="bg-primary px-6 py-2 rounded-full font-medium">Login</button>
-        </Link>
-      </header>
 
       {/* Hero Section */}
       <main className="flex-1">

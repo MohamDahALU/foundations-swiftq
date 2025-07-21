@@ -32,22 +32,6 @@ export default function CreateQueue() {
 
   return (
     <div className="min-h-screen bg-primary flex flex-col items-center py-0 px-4 relative">
-      {/* Header */}
-      <header className="w-full max-w-md flex justify-between items-center p-4">
-        <Link to="/">
-          <img src={logoFull} alt="SwiftQ" className="max-h-8" />
-        </Link>
-        <button 
-          onClick={() => setShowMenu(true)}
-          className="bg-white bg-opacity-20 rounded-full p-2 w-10 h-10 flex items-center justify-center"
-        >
-          <div className="space-y-1">
-            <div className="w-5 h-0.5 bg-black"></div>
-            <div className="w-5 h-0.5 bg-black"></div>
-            <div className="w-5 h-0.5 bg-black"></div>
-          </div>
-        </button>
-      </header>
 
       {/* Top rays */}
       <div className="flex justify-center w-52 -mt-5">
