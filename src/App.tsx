@@ -13,6 +13,7 @@ import JoinQueue from "./pages/join-queue/JoinQueue";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { JoinQueueLoader } from "./pages/join-queue/loader";
+import CustomerView from "./CustomerView";
 
 
 const router = createBrowserRouter([
@@ -28,6 +29,12 @@ const router = createBrowserRouter([
       {
         element: <CustomerLayout />,
         children: [
+          {
+            path: "/queue/:queueId/customer/:customerId",
+            element: (
+              <CustomerView />
+            ),
+          },
           {
             path: "/join/:queueId",
             element: (
