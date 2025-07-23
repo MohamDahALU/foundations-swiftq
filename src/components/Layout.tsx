@@ -1,21 +1,27 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { logout } from '../firebase/auth';
+import { useAuth } from '../context/AuthContext';
 import logoFull from "../assets/logoFull.png";
 import { MenuIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
+import JoinPopup from '../pages/_components/JoinPopup';
 
 
 export default function Layout() {
-  const currentUser = false
+  const { currentUser } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const [showJoin, setShowJoin] = useState(false);
   const pathname = useLocation().pathname;
   const showBurger = !["/register", "/login", "/join", "/customer/"].some(route => pathname.includes(route));
 
   const handleSignOut = () => {
-    return
+    logout();
   };
+
 
   return (
     <div className="min-h-screen flex flex-col">
+      {showJoin && <JoinPopup onClose={() => setShowJoin(false)} />}
       {/* Header */}
       <header className="z-20 container mx-auto px-4 py-2 flex justify-between items-center">
         <Link to="/" className="flex items-center">
@@ -71,6 +77,7 @@ export default function Layout() {
                 <button className="bg-primary-sat px-6 py-1 rounded-full font-medium shadow-lg shadow-black/30"
                   onClick={() => {
                     setShowModal(false);
+                    setShowJoin(true);
                   }}>
                   Join Queue
                 </button>
