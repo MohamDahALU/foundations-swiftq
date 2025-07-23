@@ -6,6 +6,7 @@ import CreateQueue from "./pages/CreateQueue";
 import HostQueues from "./pages/HostQueues";
 import Signup from "./pages/Signup";
 import Layout from "./components/Layout";
+import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +58,9 @@ const router = createBrowserRouter([
   },
 ]);
 function App() {
-  return <RouterProvider router={router} />;
+  return <AuthProvider>
+    <RouterProvider router={router} />;
+  </AuthProvider>
 }
 
 export default App;
