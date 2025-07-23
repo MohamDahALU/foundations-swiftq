@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { doc, collection, query, where, updateDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
-import { db } from './firebase/config';
-import type { Queue, Customer } from './firebase/schema';
+import { db } from '../firebase/config';
+import type { Queue, Customer } from '../firebase/schema';
 import { formatDistance } from 'date-fns';
 
 type QueueCustomer = {

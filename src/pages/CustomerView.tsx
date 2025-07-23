@@ -5,7 +5,7 @@ import {
   getQueue,
   getCustomerStatus,
   getCustomerPosition
-} from './firebase/services/queues';
+} from '../firebase/services/queues';
 import {
   doc,
   onSnapshot,
@@ -13,8 +13,8 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-import { db } from './firebase/config';
-import type { Customer, Queue, QueueItem } from './firebase/schema';
+import { db } from '../firebase/config';
+import type { Customer, Queue, QueueItem } from '../firebase/schema';
 
 export default function CustomerView() {
   const { queueId, customerId } = useParams<{ queueId: string; customerId: string; }>();
