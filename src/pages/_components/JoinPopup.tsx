@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import raysGreen from "../../assets/raysGreen.png";
-import QRScanner from '../../components/QRScanner';
+// import QRScanner from '../../components/QRScanner';
 import { Plus } from 'lucide-react';
 
 interface JoinPopupProps {
@@ -58,7 +58,8 @@ export default function JoinPopup({ onClose }: JoinPopupProps) {
         </div>
 
         {showScanner ? (
-          <QRScanner setShowScanner={setShowScanner} />
+          // <QRScanner setShowScanner={setShowScanner} />
+          <></>
         ) : (
           <div className='max-w-2xl mx-auto'>
             <div className="mb-4">
