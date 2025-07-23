@@ -1,177 +1,115 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import logoFull from "../assets/logoFull.png";
-import rays from "../assets/rays.png";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createQueue } from '../firebase/services/queues';
 
 export default function CreateQueue() {
-  const [queueName, setQueueName] = useState("");
-  const [requireCustomerNames, setRequireCustomerNames] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+  const [queueName, setQueueName] = useState('');
+  const [requireNames, setRequireNames] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!queueName.trim()) {
-      alert("Queue name is required");
+      setError('Queue name is required');
       return;
     }
-    
-    // TODO: Implement queue creation logic
-    console.log("Creating queue:", {
-      name: queueName,
-      requireCustomerNames
-    });
-    
-    // Navigate to queue management or success page
-    navigate("/my-queues");
-  };
 
-  const handleCancel = () => {
-    navigate("/");
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Create the queue in Firestore, passing the requireNames parameter
+      const queueId = await createQueue(queueName, requireNames);
+
+      // Redirect to the queue details page
+      navigate(`/my-queues/${queueId}`);
+    } catch (err) {
+      console.error('Error creating queue:', err);
+      setError('Failed to create queue. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-primary flex flex-col items-center py-0 px-4 relative">
 
-      {/* Top rays */}
-      <div className="flex justify-center w-52 -mt-5">
-        <img src={rays} alt="Rays" />
-      </div>
-
-      {/* Logo */}
-      <div className="bg-white rounded-full w-full max-w-md pb-6 mb-4 flex justify-center">
-        <img src={logoFull} alt="SwiftQ Logo" className="max-h-20" />
-      </div>
-
-      {/* Main Card */}
-      <div className="bg-white rounded-3xl w-full max-w-md p-6 mb-4">
-        <h2 className="text-2xl font-bold text-center mb-2">Create a New Queue</h2>
-        <p className="text-center text-gray-600 mb-6">Set up a new queue for your customers to join</p>
-
-        <form onSubmit={handleSubmit}>
-          {/* Queue Name */}
-          <div className="mb-6">
-            <label htmlFor="queueName" className="block text-lg font-bold mb-2">
-              Queue Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="queueName"
-              value={queueName}
-              onChange={(e) => setQueueName(e.target.value)}
-              placeholder="e.g. Gorilla Glue Queue"
-              className="w-full border border-lime-300 rounded-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-lime-400"
-              required
-            />
+    <div className="max-w-md mx-auto bg-white rounded-[40px] shadow-lg shadow-black/25 overflow-hidden">
+      <div className="md:flex">
+        <div className="p-8 w-full">
+          <div className="text-center mb-8">
+            <h1 className="text-lg font-bold text-gray-900">Create a New Queue</h1>
+            <p className="mt-1 text-xs text-gray-600">
+              Set up a new queue for your customers to join
+            </p>
           </div>
 
-          {/* Require Customer Names Checkbox */}
-          <div className="mb-8">
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={requireCustomerNames}
-                onChange={(e) => setRequireCustomerNames(e.target.checked)}
-                className="mt-1 h-4 w-4 text-lime-600 border-gray-300 rounded focus:ring-lime-500"
-              />
-              <div>
-                <span className="text-lg font-bold">Require customer names</span>
-                <p className="text-sm text-gray-600 mt-1">
-                  When enabled, customers would need to provide their name to join the queue.
-                </p>
+          {error && (
+            <div className="mb-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="queueName" className="block text-sm font-semibold">
+                Queue Name <span className="text-red-500">*</span>
+              </label>
+              <div className="mt-1">
+                <input
+                  id="queueName"
+                  name="queueName"
+                  type="text"
+                  required
+                  value={queueName}
+                  onChange={(e) => setQueueName(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border-2 border-primary rounded-md shadow-sm placeholder-gray-500 focus:outline-none text-sm"
+                  placeholder="e.g., Coffee Shop Queue"
+                />
               </div>
-            </label>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex space-x-4">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="flex-1 border border-gray-300 rounded-full py-3 px-6 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="flex-1 bg-primary rounded-full py-3 px-6 font-medium text-black hover:bg-lime-300 transition-colors"
-            >
-              Create Queue
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Bottom rays */}
-      <div className="flex justify-center w-52">
-        <img src={rays} alt="Rays" className="rotate-180" />
-      </div>
-
-      {/* Footer */}
-      <footer className="text-xs text-center mt-4">
-        © 2025 SwiftQ. All rights reserved.
-      </footer>
-
-      {/* Menu Overlay */}
-      {showMenu && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-primary rounded-3xl w-full max-w-sm mx-4 p-6 relative">
-            {/* Close Button */}
-            <button 
-              onClick={() => setShowMenu(false)}
-              className="absolute top-4 right-4 bg-primary rounded-full p-2 w-8 h-8 flex items-center justify-center"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {/* Menu Items */}
-            <div className="space-y-4 mt-8">
-              <button 
-                onClick={() => { setShowMenu(false); navigate("/my-queues"); }}
-                className="w-full bg-white rounded-full py-4 px-6 font-medium text-center block"
-              >
-                My Queues
-              </button>
-              
-              <button 
-                onClick={() => { setShowMenu(false); navigate("/create"); }}
-                className="w-full bg-white rounded-full py-4 px-6 font-medium text-center block"
-              >
-                Create New Queue
-              </button>
-              
-              <button 
-                onClick={() => { setShowMenu(false); navigate("/analytics"); }}
-                className="w-full bg-white rounded-full py-4 px-6 font-medium text-center block"
-              >
-                Analytics
-              </button>
             </div>
 
-            {/* Join a Queue Button */}
-            <div className="mt-8 mb-4">
-              <button 
-                onClick={() => { setShowMenu(false); navigate("/join/1234"); }}
-                className="w-full bg-primary border-2 border-black rounded-full py-3 px-6 font-medium text-center"
-              >
-                Join a Queue
-              </button>
+            <div className="flex items-start">
+              <div className="flex items-center h-5">
+                <input
+                  id="requireNames"
+                  name="requireNames"
+                  type="checkbox"
+                  checked={requireNames}
+                  onChange={(e) => setRequireNames(e.target.checked)}
+                  className="h-4 w-4"
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label htmlFor="requireNames" className="font-semibold">
+                  Require customer names
+                </label>
+                <p className="text-gray-500 text-xs">When enabled, customers will need to provide their name to join the queue</p>
+              </div>
             </div>
 
-            {/* Logout Button */}
-            <div className="mt-4">
-              <button 
-                onClick={() => { setShowMenu(false); navigate("/login"); }}
-                className="w-full bg-white rounded-full py-3 px-6 font-medium text-center"
+            <div className="flex items-center space-x-3 mt-8">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="py-1 px-4 border border-red-500 rounded-xl text-sm font-semibold bg-white shadow-lg shadow-black/25"
               >
-                Logout
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`flex-1 py-1 px-4 border border-transparent rounded-xl shadow-lg shadow-black/25 text-sm font-semibold bg-primary hover:bg-primary-sat  ${isLoading ? 'opacity-75 cursor-not-allowed' : ''
+                  }`}
+              >
+                {isLoading ? 'Creating...' : 'Create Queue'}
               </button>
             </div>
-          </div>
+          </form>
         </div>
-      )}
+      </div>
     </div>
   );
 }
