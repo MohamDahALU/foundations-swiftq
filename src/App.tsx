@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { JoinQueueLoader } from "./pages/join-queue/loader";
 import CustomerView from "./CustomerView";
+import HostQueueDetails from "./HostQueueDetails";
 
 
 const router = createBrowserRouter([
@@ -61,6 +62,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         loader: HostQueueLoader
+      },
+      {
+        path: "/my-queues/:queueId",
+        element: (
+          <ProtectedRoute>
+            <HostQueueDetails />
+          </ProtectedRoute>
+        ),
       },
 
 
