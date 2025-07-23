@@ -15,6 +15,7 @@ import Signup from "./pages/Signup";
 import { JoinQueueLoader } from "./pages/join-queue/loader";
 import CustomerView from "./CustomerView";
 import HostQueueDetails from "./HostQueueDetails";
+import Analytics from "./pages/Analytics";
 
 
 const router = createBrowserRouter([
@@ -68,6 +69,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <HostQueueDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/analytics",
+        element: (
+          <ProtectedRoute>
+            <Analytics />
           </ProtectedRoute>
         ),
       },
