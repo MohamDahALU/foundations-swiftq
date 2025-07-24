@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 
 export default function CustomerLayout() {
   return (
-    <div className="h-dvh absolute top-0 left-0 w-full bg-primary flex flex-col justify-start items-center overflow-y-scroll">
+    <div className="h-dvh absolute top-0 left-0 pt-8 w-full bg-primary flex flex-col justify-start items-center overflow-y-scroll">
 
       <img src={rays} alt="Rays" className="w-40" />
 
