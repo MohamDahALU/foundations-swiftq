@@ -10,6 +10,7 @@ type QueueCustomer = {
   data: Customer;
 };
 
+// /my-queues/:queueId
 export default function HostQueueDetails() {
   const { queueId } = useParams<{ queueId: string; }>();
   const navigate = useNavigate();

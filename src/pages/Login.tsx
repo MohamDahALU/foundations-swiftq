@@ -3,37 +3,48 @@ import { useNavigate } from 'react-router-dom';
 import { loginWithEmail } from '../firebase/auth';
 import logoFull from "../assets/logoFull.png"
 
+// Login component handles user authentication through email and password
 const Login = () => {
+  // State variables to store user input and component state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(''); // Stores authentication errors
+  const [isLoading, setIsLoading] = useState(false); // Tracks login request status
   const navigate = useNavigate();
 
+  // Handle form submission for email/password login
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    setIsLoading(true); // Show loading state
+    setError(''); // Clear any previous errors
     
     try {
+      // Attempt to log in with provided credentials
       await loginWithEmail(email, password);
+      // Redirect to my-queues page upon successful login
       navigate('/my-queues');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      // Display error message if login fails
       setError(err.message || 'Failed to log in');
     } finally {
+      // Reset loading state regardless of outcome
       setIsLoading(false);
     }
   };
   return (
+    // Main container with flex layout
     <div className=" flex flex-col justify-center py-4 px-4">
+      {/* Logo section */}
       <div>
         <img src={logoFull} alt="Logo" className='mx-auto' />
       </div>
+      {/* Page title */}
       <div className="mx-auto w-full max-w-md bg-primary rounded-full">
         <h2 className="my-2 text-center text-2xl font-semibold text-gray-900">Sign in to your account</h2>
       </div>
 
+      {/* Login form container */}
       <div className="mt-8 sm:mx-auto w-full max-w-md ">
         <div className="bg-white py-8 px-4 sm:px-10 border-8 border-primary rounded-3xl shadow-md shadow-black/25">
           {error && (

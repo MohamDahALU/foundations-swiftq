@@ -2,21 +2,27 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createQueue } from '../firebase/services/queues';
 
+// CreateQueue component - allows hosts to create new queues
+// Route: /create
 export default function CreateQueue() {
+  // Form state for queue creation
   const [queueName, setQueueName] = useState('');
   const [requireNames, setRequireNames] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Validate queue name
     if (!queueName.trim()) {
       setError('Queue name is required');
       return;
     }
 
+    // Start loading state
     setIsLoading(true);
     setError(null);
 

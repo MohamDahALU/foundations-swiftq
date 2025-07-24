@@ -4,6 +4,7 @@ import { updateProfile } from 'firebase/auth';
 import { registerWithEmail } from '../firebase/auth';
 import logoFull from "../assets/logoFull.png";
 
+// Signup component handles user authentication through email and password
 export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

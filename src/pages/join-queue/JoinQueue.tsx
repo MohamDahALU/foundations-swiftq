@@ -4,28 +4,32 @@ import { useParams, useNavigate, useLoaderData } from "react-router-dom";
 import { joinQueue } from "../../firebase/services/queues";
 import { type CustomerItem, type Queue } from "../../firebase/schema";
 
+// Type for data loaded by the router
 type LoaderData = {
   queue: { id: string, data: Queue; };
   prevPositions: CustomerItem[];
 };
 
+// Join Queue page - allows customers to join a queue by ID
+// Route: /join/:queueId
 export default function JoinQueue() {
   const { queueId } = useParams<{ queueId: string; }>();
   const navigate = useNavigate();
   const { queue, prevPositions } = useLoaderData() as LoaderData;
   const queueData = queue.data;
 
+  // Form state
   const [customerName, setCustomerName] = useState("");
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
+  // Handle form submission to join the queue
   const handleJoinQueue = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!queueId) return;
 
-    // If queue requires name but none provided
+    // Validate name requirement
     if (queueData?.requireCustomerName && !customerName.trim()) {
       setError("Please enter your name to join this queue");
       return;

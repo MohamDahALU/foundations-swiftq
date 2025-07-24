@@ -1,3 +1,4 @@
+// Generates a random alphanumeric ID consisting of 7 characters.
 export function generateId() {
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let result = "";

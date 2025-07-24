@@ -5,6 +5,7 @@ import { getQueue } from '../firebase/services/queues';
 import type { Queue } from '../firebase/schema';
 import { CheckCircle2, Copy } from 'lucide-react';
 
+// /qr/:queueId
 // QR page for displaying queue info, QR code, and join link
 export default function QR() {
   // Get queueId from URL params

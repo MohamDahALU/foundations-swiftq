@@ -3,6 +3,8 @@ import logoFull from "../assets/logoFull.png";
 import { useState } from 'react';
 import JoinPopup from './_components/JoinPopup';
 
+// Home Page
+// Route: /
 export default function Home() {
 
   const [showJoin, setShowJoin] = useState(false);

@@ -16,6 +16,7 @@ interface Analytics {
 
 type TimeFilter = 'today' | 'yesterday' | 'week' | 'month' | 'all';
 
+// /analytics
 export default function Analytics() {
   const [loading, setLoading] = useState<boolean>(true);
   const [analytics, setAnalytics] = useState<Analytics>({

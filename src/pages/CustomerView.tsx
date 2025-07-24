@@ -16,6 +16,7 @@ import {
 import { db } from '../firebase/config';
 import type { Customer, Queue, QueueItem } from '../firebase/schema';
 
+// /queue/:queueId/customer/:customerId
 export default function CustomerView() {
   const { queueId, customerId } = useParams<{ queueId: string; customerId: string; }>();
   const navigate = useNavigate();

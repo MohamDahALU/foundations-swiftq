@@ -4,31 +4,34 @@ import type { QueueItem } from '../../firebase/schema';
 import { db } from '../../firebase/config';
 import { doc, updateDoc } from 'firebase/firestore';
 
+// Defines the structure of data received from the route loader
 type LoaderData = {
   queues: (QueueItem & { count: number; })[];
 };
 
+// Main component for displaying the user's created queues
 export default function HostQueues() {
   const loaderData = useLoaderData() as LoaderData;
   const [queues, setQueues] = useState(loaderData.queues);
-  // Add state for delete confirmation
+  // Tracks which queue is currently being activated/deactivated
   const [activeInProgress, setActiveInProgress] = useState<string | null>(null);
 
 
-  // Toggle queue active state
+  // Handles activating or deactivating a queue
   const toggleQueueStatus = async (queue: QueueItem & {
     count: number;
   }) => {
     if (!queue.id || !queue) return;
     setActiveInProgress(queue.id);
     try {
+      // Update queue status in Firestore
       await updateDoc(doc(db, "queues", queue.id), {
         isActive: !queue.data.isActive
       });
+      // Update local state to reflect changes
       setQueues(prev => prev.map(q => {
         const newQ = { ...q };
         if (q.id === queue.id) {
-          console.log("fsadf");
           newQ.data = { ...newQ.data, isActive: !newQ.data.isActive };
         }
         return newQ;
