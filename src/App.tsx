@@ -2,7 +2,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorPage from "./components/ErrorPage";
-
 import { HostQueueLoader } from "./pages/host-queues/loader";
 import Layout from "./components/Layout";
 import CustomerLayout from "./components/CustomerLayout";
@@ -16,6 +15,7 @@ import { JoinQueueLoader } from "./pages/join-queue/loader";
 import CustomerView from "./pages/CustomerView";
 import HostQueueDetails from "./pages/HostQueueDetails";
 import Analytics from "./pages/Analytics";
+import QR from "./pages/QR";
 
 
 const router = createBrowserRouter([
@@ -69,6 +69,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <HostQueueDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/qr/:queueId",
+        element: (
+          <ProtectedRoute>
+            <QR />
           </ProtectedRoute>
         ),
       },
