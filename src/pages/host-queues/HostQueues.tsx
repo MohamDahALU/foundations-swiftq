@@ -1,56 +1,45 @@
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { Link, useLoaderData } from 'react-router-dom';
+import type { QueueItem } from '../../firebase/schema';
+import { db } from '../../firebase/config';
+import { doc, updateDoc } from 'firebase/firestore';
+
+type LoaderData = {
+  queues: (QueueItem & { count: number; })[];
+};
 
 export default function HostQueues() {
+  const loaderData = useLoaderData() as LoaderData;
+  const [queues, setQueues] = useState(loaderData.queues);
+  // Add state for delete confirmation
   const [activeInProgress, setActiveInProgress] = useState<string | null>(null);
 
-  // Mock data for testing component design
-  const queues = [
-    {
-      id: '1',
-      count: 5,
-      data: {
-        id: 'queue-1',
-        queueName: 'Office Hours Queue',
-        createdAt: { toDate: () => new Date('2023-11-01') },
-        requireCustomerName: true,
-        isActive: true,
-      }
-    },
-    {
-      id: '2',
-      count: 0,
-      data: {
-        id: 'queue-2',
-        queueName: 'Lab Assistance',
-        createdAt: { toDate: () => new Date('2023-11-15') },
-        requireCustomerName: false,
-        isActive: false,
-      }
-    },
-    {
-      id: '3',
-      count: 12,
-      data: {
-        id: 'queue-3',
-        queueName: 'Student Support Hours',
-        createdAt: { toDate: () => new Date('2023-10-20') },
-        requireCustomerName: true,
-        isActive: true,
-      }
-    }
-  ];
 
-  // Function to toggle queue active status
-  const toggleQueueStatus = (queue: typeof queues[0]) => {
+  // Toggle queue active state
+  const toggleQueueStatus = async (queue: QueueItem & {
+    count: number;
+  }) => {
+    if (!queue.id || !queue) return;
     setActiveInProgress(queue.id);
-    // Simulate API call with timeout
-    setTimeout(() => {
-      queue.data.isActive = !queue.data.isActive;
-      setActiveInProgress(null);
-    }, 1000);
-  };
+    try {
+      await updateDoc(doc(db, "queues", queue.id), {
+        isActive: !queue.data.isActive
+      });
+      setQueues(prev => prev.map(q => {
+        const newQ = { ...q };
+        if (q.id === queue.id) {
+          console.log("fsadf");
+          newQ.data = { ...newQ.data, isActive: !newQ.data.isActive };
+        }
+        return newQ;
+      }));
+    } catch (err) {
+      console.error("Error updating queue status:", err);
+      alert("Failed to update queue status.");
+    }
 
+    setActiveInProgress(null);
+  };
   return (
     <div className="py-8">
       <div className="flex flex-col justify-between items-center mb-6">
