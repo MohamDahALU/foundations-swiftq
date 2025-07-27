@@ -155,9 +155,9 @@ export default function HostQueueDetails() {
       await updateDoc(customerRef, {
         notified: true,
         status: "notified",
-        notifiedAt: serverTimestamp()
+        notifiedAt: serverTimestamp(), 
+        lastNotifiedAt: serverTimestamp()
       });
-      // No need to manually refresh - listeners will handle it
     } catch (err) {
       console.error("Error notifying customer:", err);
       setError("Failed to notify customer.");
@@ -315,7 +315,7 @@ export default function HostQueueDetails() {
             </div>
           ) : (
             <div className="space-y-4 my-3">
-              {customers.map((customer, index) => (
+              {customers.map((customer) => (
                 <div
                   key={customer.id}
                   className={`mx-2 p-2 rounded-md bg-primary/40`}
@@ -344,12 +344,13 @@ export default function HostQueueDetails() {
                     </div>
 
                     <div className="flex gap-3 self-center justify-end flex-wrap max-w-40">
-                      {customer.data.status === 'waiting' && index === 0 && (
+                      {/* Modified to allow notifying at any time if customer is in waiting or notified status */}
+                      {(customer.data.status === 'waiting' || customer.data.status === 'notified') && (
                         <button
                           onClick={() => notifyCustomer(customer.id)}
                           className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-md shadow-black/25 text-yellow-700 bg-yellow-100 hover:bg-yellow-200"
                         >
-                          Notify
+                          {customer.data.status === 'notified' ? 'Notify Again' : 'Notify'}
                         </button>
                       )}
                       <button

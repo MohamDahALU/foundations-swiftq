@@ -127,6 +127,13 @@ export default function CustomerView() {
           // Check if status changed to 'notified'
           if (prevCustomerStatusRef.current !== 'notified' && data.status === 'notified') {
             playNotificationSound();
+          } else if (data.status === 'notified' && data.lastNotifiedAt) {
+            // Play notification sound again if the customer is re-notified
+            // by checking if the lastNotifiedAt timestamp is different
+            if (!customer?.lastNotifiedAt || 
+                data.lastNotifiedAt.toMillis() !== customer.lastNotifiedAt?.toMillis()) {
+              playNotificationSound();
+            }
           }
           
           // Check if status is 'removed' and redirect to home page

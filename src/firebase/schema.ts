@@ -26,6 +26,7 @@ export interface Customer {
   notifiedAt?: Timestamp;
   servedAt?: Timestamp;
   exitedAt?: Timestamp; // Added timestamp for when customer exited
+  lastNotifiedAt?: Timestamp; // Timestamp of the most recent notification
 }
 
 export interface CustomerItem {
