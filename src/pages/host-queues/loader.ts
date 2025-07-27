@@ -5,8 +5,7 @@ import { getHostQueues, getQueueCustomers } from "../../firebase/services/queues
 export async function HostQueueLoader() {
   try {
     // This will redirect to login if not authenticated
-    const huh = await requireAuth();
-    console.log(huh)
+    await requireAuth();
     
     // If we get here, user is authenticated
     const data = await getHostQueues();

@@ -4,6 +4,7 @@ import { doc, collection, query, where, updateDoc, onSnapshot, serverTimestamp }
 import { db } from '../firebase/config';
 import type { Queue, Customer } from '../firebase/schema';
 import { formatDistance } from 'date-fns';
+import { useAuth } from '../context/AuthContext'; // Import useAuth hook
 
 type QueueCustomer = {
   id: string;
@@ -14,11 +15,13 @@ type QueueCustomer = {
 export default function HostQueueDetails() {
   const { queueId } = useParams<{ queueId: string; }>();
   const navigate = useNavigate();
+  const { currentUser } = useAuth(); // Get current user from auth context
   const [queue, setQueue] = useState<{ id: string, data: Queue; } | null>(null);
   const [customers, setCustomers] = useState<QueueCustomer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isQueueActive, setIsQueueActive] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   // Calculate average time
   const avgWaitTime = useMemo(() => queue?.data.waitTimes ? queue?.data.waitTimes.reduce((a, i) => a + i, 0) / queue?.data.waitTimes.length : null, [queue?.data.waitTimes]);
@@ -26,6 +29,11 @@ export default function HostQueueDetails() {
   // Set up real-time listeners for queue and customers
   useEffect(() => {
     if (!queueId) return;
+    if (!currentUser) {
+      setIsAuthorized(false);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
 
@@ -39,8 +47,15 @@ export default function HostQueueDetails() {
             id: doc.id,
             data: doc.data() as Queue
           };
-          setQueue(queueData);
-          setIsQueueActive(queueData.data.isActive);
+          
+          // Check if current user is the owner of the queue
+          if (queueData.data.hostId === currentUser.uid) {
+            setIsAuthorized(true);
+            setQueue(queueData);
+            setIsQueueActive(queueData.data.isActive);
+          } else {
+            setIsAuthorized(false);
+          }
           setIsLoading(false);
         } else {
           setError("Queue not found.");
@@ -54,35 +69,39 @@ export default function HostQueueDetails() {
       }
     );
 
-    // Set up listener for customers collection
-    const customersRef = collection(db, "queues", queueId, "customers");
-    const customersQuery = query(
-      customersRef,
-      where("status", "in", ["waiting", "notified"]),
-    );
+    // Only set up customer listener if user is authorized
+    let unsubscribeCustomers = () => {};
+    
+    if (isAuthorized) {
+      // Set up listener for customers collection
+      const customersRef = collection(db, "queues", queueId, "customers");
+      const customersQuery = query(
+        customersRef,
+        where("status", "in", ["waiting", "notified"]),
+      );
 
-
-    const unsubscribeCustomers = onSnapshot(customersQuery,
-      (snapshot) => {
-        const customersList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          data: doc.data() as Customer
-        }))
-          .sort((a, b) => a.data.position - b.data.position);
-        setCustomers(customersList);
-      },
-      (err) => {
-        console.error("Error listening to customers:", err);
-        setError("Failed to load customers data.");
-      }
-    );
+      unsubscribeCustomers = onSnapshot(customersQuery,
+        (snapshot) => {
+          const customersList = snapshot.docs.map(doc => ({
+            id: doc.id,
+            data: doc.data() as Customer
+          }))
+            .sort((a, b) => a.data.position - b.data.position);
+          setCustomers(customersList);
+        },
+        (err) => {
+          console.error("Error listening to customers:", err);
+          setError("Failed to load customers data.");
+        }
+      );
+    }
 
     // Clean up listeners when component unmounts
     return () => {
       unsubscribeQueue();
       unsubscribeCustomers();
     };
-  }, [queueId]);
+  }, [queueId, currentUser, isAuthorized]);
 
   // Toggle queue active state
   const toggleQueueStatus = async () => {
@@ -171,15 +190,15 @@ export default function HostQueueDetails() {
     );
   }
 
-  if (error || !queue) {
+  if (error || !queue || !isAuthorized) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
           <h2 className="text-xl font-bold text-red-600">Error</h2>
-          <p className="mt-2">{error || "Queue not found"}</p>
+          <p className="mt-2">{error || "Queue not found or you don't have access"}</p>
           <button
             onClick={() => navigate('/my-queues')}
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
           >
             Back to My Queues
           </button>

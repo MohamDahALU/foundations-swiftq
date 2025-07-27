@@ -7,6 +7,7 @@ type QRScannerProps = {
 };
 
 export default function QRScanner({ setShowScanner }: QRScannerProps) {
+  console.log("fsdafsd")
   const [error, setError] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const scanning = useRef(false);

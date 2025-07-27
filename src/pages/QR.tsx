@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { getQueue } from '../firebase/services/queues';
 import type { Queue } from '../firebase/schema';
 import { CheckCircle2, Copy } from 'lucide-react';
+import { useAuth } from '../context/AuthContext'; // Import useAuth hook
 
 // /qr/:queueId
 // QR page for displaying queue info, QR code, and join link
@@ -11,6 +12,7 @@ export default function QR() {
   // Get queueId from URL params
   const { queueId } = useParams<{ queueId: string; }>();
   const navigate = useNavigate();
+  const { currentUser } = useAuth(); // Get current authenticated user
 
   // State for queue data, loading, error, join link, and copy feedback
   const [queue, setQueue] = useState<{ id: string, data: Queue; } | null>(null);
@@ -19,6 +21,7 @@ export default function QR() {
   const [joinLink, setJoinLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [isOwner, setIsOwner] = useState(false); // Track if current user is the queue owner
 
   // Fetch queue data when queueId changes
   useEffect(() => {
@@ -38,6 +41,14 @@ export default function QR() {
         }
 
         setQueue(queueData);
+        
+        // Check if current user is the queue owner
+        if (currentUser && queueData.data.hostId === currentUser.uid) {
+          setIsOwner(true);
+        } else {
+          setError('Unauthorized: Only queue owners can access this page');
+        }
+        
         // Create the join link for sharing
         const baseUrl = window.location.origin;
         setJoinLink(`${baseUrl}/join/${queueId}`);
@@ -50,7 +61,7 @@ export default function QR() {
     };
 
     fetchQueue();
-  }, [queueId]);
+  }, [queueId, currentUser]);
 
   // Copy join link to clipboard
   const copyToClipboard = () => {
@@ -77,12 +88,17 @@ export default function QR() {
     );
   }
 
-  // Show error message if queue not found or fetch fails
-  if (error || !queue) {
+  // Show error message if queue not found, fetch fails, or user is unauthorized
+  if (error || !queue || !isOwner) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center justify-center">
         <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md text-center">
           <div className="text-red-500 mb-4">{error || "Queue not found"}</div>
+          {error === 'Unauthorized: Only queue owners can access this page' && (
+            <p className="text-sm text-gray-600 mb-4">
+              Redirecting to My Queues page in 3 seconds...
+            </p>
+          )}
           <button
             onClick={() => navigate(-1)}
             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
