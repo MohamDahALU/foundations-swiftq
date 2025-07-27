@@ -5,6 +5,7 @@ import { db } from '../firebase/config';
 import type { Queue, Customer } from '../firebase/schema';
 import { formatDistance } from 'date-fns';
 import { useAuth } from '../context/AuthContext'; // Import useAuth hook
+import { removeCustomer } from '../firebase/services/queues'; // Import the new function
 
 type QueueCustomer = {
   id: string;
@@ -184,6 +185,21 @@ export default function HostQueueDetails() {
     return duration;
   };
 
+  // Add function to handle removing a customer
+  const handleRemoveCustomer = async (customerId: string) => {
+    if (!queueId) return;
+
+    if (confirm('Are you sure you want to remove this customer from the queue?')) {
+      try {
+        await removeCustomer(queueId, customerId);
+        // No need to update state manually as the listener will handle it
+      } catch (err) {
+        console.error("Error removing customer:", err);
+        setError("Failed to remove customer.");
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
@@ -307,12 +323,12 @@ export default function HostQueueDetails() {
                   <div className="flex sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                        <span className="font-medium text-green-800">#{customer.data.position.toString().padStart(3, "0")}</span>
+                        <span className="font-medium text-green-800">#{customer.data.position.toString().padStart(2, "0")}</span>
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-900">
                           {customer.data.name} {" "}
-                          <span className='text-xs'>#{customer.data.position.toString().padStart(3, "0")}</span>
+                          <span className='text-xs'>#{customer.data.position.toString().padStart(2, "0")}</span>
                         </h3>
                         <div className="flex flex-col items-start mt-1">
                           <span className="text-sm text-gray-600">Wait: {getWaitTimeDisplay(customer)}</span>
@@ -327,7 +343,7 @@ export default function HostQueueDetails() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-3 self-center">
+                    <div className="flex gap-3 self-center justify-end flex-wrap max-w-40">
                       {customer.data.status === 'waiting' && index === 0 && (
                         <button
                           onClick={() => notifyCustomer(customer.id)}
@@ -341,6 +357,12 @@ export default function HostQueueDetails() {
                         className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-md shadow-black/25 text-green-700 bg-green-100 hover:bg-green-200"
                       >
                         Serve
+                      </button>
+                      <button
+                        onClick={() => handleRemoveCustomer(customer.id)}
+                        className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-md shadow-black/25 text-red-700 bg-red-100 hover:bg-red-200"
+                      >
+                        Skip
                       </button>
                     </div>
                   </div>

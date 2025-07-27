@@ -129,6 +129,14 @@ export default function CustomerView() {
             playNotificationSound();
           }
           
+          // Check if status is 'removed' and redirect to home page
+          if (data.status === 'removed') {
+            setError('Your position has been skipped');
+            // setTimeout(() => {
+            //   navigate('/');
+            // }, 3000); // Redirect after 3 seconds
+          }
+          
           // Update previous status ref
           prevCustomerStatusRef.current = data.status;
           setCustomer(data);

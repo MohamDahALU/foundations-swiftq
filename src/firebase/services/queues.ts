@@ -363,3 +363,20 @@ export const exitQueue = async (
     throw error;
   }
 };
+
+// Function to handle host removing a customer from queue
+export const removeCustomer = async (
+  queueId: string,
+  customerId: string
+): Promise<void> => {
+  try {
+    const customerRef = doc(db, "queues", queueId, "customers", customerId);
+    await updateDoc(customerRef, {
+      status: "removed",
+      removedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error("Error removing customer:", error);
+    throw error;
+  }
+};

@@ -20,7 +20,7 @@ export interface QueueItem {
 export interface Customer {
   name: string;
   joinedAt: Timestamp;
-  status: "waiting" | "served" | "skipped" | "notified" | "exited"; // Added "exited" status
+  status: "waiting" | "served" | "skipped" | "notified" | "exited" | "removed"; // Added "exited" status
   position: number;
   notified?: boolean;
   notifiedAt?: Timestamp;
