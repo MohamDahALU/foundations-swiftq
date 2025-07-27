@@ -77,7 +77,7 @@ export default function HostQueueDetails() {
       const customersRef = collection(db, "queues", queueId, "customers");
       const customersQuery = query(
         customersRef,
-        where("status", "in", ["waiting", "notified"]),
+        where("status", "in", ["waiting", "notified", "exited"]),
       );
 
       unsubscribeCustomers = onSnapshot(customersQuery,
@@ -86,7 +86,9 @@ export default function HostQueueDetails() {
             id: doc.id,
             data: doc.data() as Customer
           }))
-            .sort((a, b) => a.data.position - b.data.position);
+            .sort((a, b) => a.data.position - b.data.position)
+            // Filter out exited customers from the active display
+            .filter(customer => customer.data.status !== "exited");
           setCustomers(customersList);
         },
         (err) => {

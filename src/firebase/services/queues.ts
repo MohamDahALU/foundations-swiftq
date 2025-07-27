@@ -9,6 +9,7 @@ import {
   orderBy,
   getDocs,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../config";
 import { getAuth } from "firebase/auth";
@@ -326,6 +327,39 @@ export const getAllCustomersForHost = async (): Promise<
     return result;
   } catch (error) {
     console.error("Error fetching all customer data:", error);
+    throw error;
+  }
+};
+
+// Function to handle customer exiting a queue
+export const exitQueue = async (
+  queueId: string,
+  customerId: string
+): Promise<void> => {
+  try {
+    const customerRef = doc(db, "queues", queueId, "customers", customerId);
+    await updateDoc(customerRef, {
+      status: "exited",
+      exitedAt: serverTimestamp(),
+    });
+
+    // Save to local storage history that this customer exited
+    const queueHistory = JSON.parse(
+      localStorage.getItem("queue_history") || "[]"
+    );
+
+    // Update the queue history to mark this customer as exited
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedHistory = queueHistory.map((item: any) => {
+      if (item.customerId === customerId && item.queueId === queueId) {
+        return { ...item, exited: true, exitedAt: new Date().toISOString() };
+      }
+      return item;
+    });
+
+    localStorage.setItem("queue_history", JSON.stringify(updatedHistory));
+  } catch (error) {
+    console.error("Error exiting queue:", error);
     throw error;
   }
 };

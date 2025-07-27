@@ -4,7 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   getQueue,
   getCustomerStatus,
-  getCustomerPosition
+  getCustomerPosition,
+  exitQueue
 } from '../firebase/services/queues';
 import {
   doc,
@@ -30,6 +31,7 @@ export default function CustomerView() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [exitingQueue, setExitingQueue] = useState(false);
   
   // Add ref for previous customer status
   const prevCustomerStatusRef = useRef<string | null>(null);
@@ -85,6 +87,15 @@ export default function CustomerView() {
           setLoading(false);
           return;
         }
+        
+        // Check if customer has already exited the queue
+        if (customerData.status === 'exited') {
+          setError('You have already left this queue');
+          setTimeout(() => {
+            navigate(`/join/${queueId}`);
+          }, 3000); // Redirect after 3 seconds
+        }
+        
         setCustomer(customerData);
 
         // Get position data
@@ -100,7 +111,7 @@ export default function CustomerView() {
     };
 
     fetchInitialData();
-  }, [queueId, customerId]);
+  }, [queueId, customerId, navigate]);
 
   // Set up real-time listeners
   useEffect(() => {
@@ -194,6 +205,25 @@ export default function CustomerView() {
     };
   }, [queue?.id, customerId, loading]);
 
+  // Handle exiting the queue
+  const handleExitQueue = async () => {
+    if (!queueId || !customerId) return;
+    
+    if (!confirm('Are you sure you want to exit this queue? This action cannot be undone.')) {
+      return;
+    }
+    
+    setExitingQueue(true);
+    try {
+      await exitQueue(queue?.id || "", customerId);
+      navigate('/');
+    } catch (err) {
+      console.error('Error exiting queue:', err);
+      setError('Failed to exit queue. Please try again.');
+      setExitingQueue(false);
+    }
+  };
+
   // Helper function to format status for display
   const getStatusDisplay = () => {
     if (!customer) return '';
@@ -241,6 +271,9 @@ export default function CustomerView() {
     return (
       <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
         <div className="text-red-500 text-center mb-4">{error || "Could not find your position in queue"}</div>
+        {error === 'You have already left this queue' && (
+          <p className="text-gray-600 text-center mb-4">Redirecting to join page...</p>
+        )}
         <button
           onClick={() => navigate("/")}
           className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
@@ -253,7 +286,6 @@ export default function CustomerView() {
 
   const etaWaitTime = Math.floor(((queue.data.estimatedWaitPerPerson || 0) * (position.totalAhead + 1)) / 1000 / 60);
 
-  // TODO: Then make the analytics page
   return (
     <div className="max-w-md mx-auto mt-10 p-6 pb-9 bg-white rounded-[40px] shadow-lg shadow-black/25">
       <h1 className="text-xl font-bold mb-2 text-center">{queue.data.queueName}</h1>
@@ -309,7 +341,7 @@ export default function CustomerView() {
         </div>
       )}
 
-      <div className="mt-8 border-t pt-4">
+      <div className="mt-8 border-t pt-4 space-y-3">
         <p className="text-xs text-gray-900 mb-3">
           Keep this page open to maintain your position and receive notifications when it's your turn.
         </p>
@@ -319,6 +351,17 @@ export default function CustomerView() {
         >
           Return to Home
         </button>
+        
+        {/* Add Exit Queue button - only show if customer is waiting or notified */}
+        {(customer.status === 'waiting' || customer.status === 'notified') && (
+          <button
+            onClick={handleExitQueue}
+            disabled={exitingQueue}
+            className="w-full font-semibold bg-red-500 text-white py-2 px-4 rounded-xl hover:bg-red-600 shadow-lg shadow-black/25"
+          >
+            {exitingQueue ? 'Exiting...' : 'Exit Queue'}
+          </button>
+        )}
       </div>
     </div>
   );
